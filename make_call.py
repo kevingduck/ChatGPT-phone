@@ -290,7 +290,7 @@ async def start(request: web.Request) -> web.Response:
         logging.info('Got websocket URL: %s', stream_url)
 
         twilio_response.start().stream(url=stream_url, track='inbound_track')
-        twilio_response.say('Welcome to Kevins ChatGPT Robot. You must be Mike. What would you like to know?')
+        twilio_response.say('Welcome to Kevins ChatGPT Robot. What would you like to know?')
         await continue_call(request, twilio_response)
 
         sms_data = {
