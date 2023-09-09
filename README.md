@@ -1,3 +1,5 @@
+Practice realistic cold calls with an AI bot
+
 This uses a twilio number to point to a python script running on ngrok server
 
 twilio configuration for phone number, ngrok URL endpoint
