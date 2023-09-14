@@ -67,7 +67,7 @@ In the Twilio console, configure the webhook endpoint to point to the URL genera
 
 Install ngrok on your system or server.
 
-Authenticate following the (steps here)[https://dashboard.ngrok.com/get-started/setup].
+Authenticate following the [steps here](https://dashboard.ngrok.com/get-started/setup).
 
 Run the following command to create a publicly accessible URL that forwards to your local server on port 8080:
 
