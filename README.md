@@ -69,10 +69,10 @@ Install ngrok on your system or server.
 
 Authenticate following the [steps here](https://dashboard.ngrok.com/get-started/setup).
 
-Run the following command to create a publicly accessible URL that forwards to your local server on port 8080:
+Run the following command to create a publicly accessible URL that forwards to your local server on port 8080 (reserve your own domain in ngrok settings):
 
 ```
-ngrok http --domain coldcallgenius.com 8080
+ngrok http --hostname=coldcallgenius.ngrok.io 8080
 ```
 
 At this point you should be able to run `python3 start.py` in one terminal and `ngrok http 8080` in another. In the Twilio console, set the endpoint as the ngrok URL, e.g., http://<ngrok-url.io>/twilio/twiml/start. You should be able to call the number and see it register on the ngrok terminal and also see the python script responding. 
