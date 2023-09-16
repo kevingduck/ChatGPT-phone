@@ -142,6 +142,35 @@ You can verify if the service is running successfully by checking its status:
 sudo systemctl status coldcallgenius.service
 ```
 
+Repeat the steps for the ngrok service. This is the service file coldcallgenius-ngrok.service:
+
+```
+sudo nano /etc/systemd/system/coldcallgenius-ngrok.service
+```
+
+```
+[Unit]
+Description=ngrok HTTP Tunnel Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ngrok http --hostname=coldcallgenius.ngrok.io 8080
+Restart=always
+User=admin
+
+
+[Install]
+WantedBy=multi-user.target
+```
+
+then run this to enable it at startup and run it now:
+
+```
+sudo systemctl enable coldcallgenius-ngrok.service
+sudo systemctl start coldcallgenius-ngrok.service
+```
+
+
 ### Testing
 
 Once the script and ngrok are running, call the twilio number to test it out. 
