@@ -7,7 +7,7 @@
 
 📱 Twilio configuration for phone number, ngrok URL endpoint
 
-💻 python start.py script runs as system service 
+💻 python script 'start.py' runs as system service 
 
 🕸️ ngrok starts server pointing to coldcallgenius.ngrok.io
 
