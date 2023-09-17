@@ -16,6 +16,9 @@ from dotenv import load_dotenv
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse
 
+from message_config import SYSTEM_MESSAGE_CONTENT
+
+
 # Number of milliseconds of silence that mark the end of a user interaction.
 ENDPOINTING_DELAY = 2500
 
@@ -77,7 +80,7 @@ async def call_chatgpt(message: str, request: web.Request) -> str:
         'Authorization': f"Bearer {key}",
     }
     messages = [
-        {'role':'system', 'content': 'You are a business owner receiving a cold call from a salesperson. You are trying to decide if you want to hang up or continue the conversation. You are skeptical but can be convinced if the salesperson is persistent and has a good pitch. Respond to each message briefly. Each response should be one or two sentences. Include filler words and pauses to think.'},
+        {'role':'system', 'content': SYSTEM_MESSAGE_CONTENT},
         {'role': 'user', 'content': message},
     ]
     payload = {
@@ -297,7 +300,7 @@ async def start(request: web.Request) -> web.Response:
         logging.info('Got websocket URL: %s', stream_url)
 
         twilio_response.start().stream(url=stream_url, track='inbound_track')
-        twilio_response.say('Hi, this is Laura.', voice="Polly.Amy", language="en-GB")
+        twilio_response.say('Hey. Whats up?', voice="Polly.Justin-Neural", language="en-US")
         await continue_call(request, twilio_response)
 
         sms_data = {
