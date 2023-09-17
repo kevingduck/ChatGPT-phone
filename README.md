@@ -85,7 +85,7 @@ Continue on to make it more resilient with system services. A $10/mo subscriptio
 
 ### Create System Services
 
-Create system services to manage the Python script (start.py) and the ngrok script. These services will ensure that the scripts run continuously and restart in case of failures or system restarts.
+Create system services to manage the Python script (start.py) and the ngrok script. Pre-created files are available in the system_config directory. These services will ensure that the scripts run continuously and restart in case of failures or system restarts.
 
 Before we begin, ensure you have necessary packages installed. You might require systemd and python3 (along with pip to install dependencies from the repository).
 
