@@ -16,11 +16,11 @@ from dotenv import load_dotenv
 from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse
 
-from message_config import SYSTEM_MESSAGE_CONTENT
 
+SYSTEM_MESSAGE_CONTENT = "You're a helpful assistant."
 
 # Number of milliseconds of silence that mark the end of a user interaction.
-ENDPOINTING_DELAY = 2500
+ENDPOINTING_DELAY = 2000
 
 # A sentinel to mark the end of a transcript stream
 END_TRANSCRIPT_MARKER = 'END_TRANSCRIPT_MARKER'
@@ -84,7 +84,7 @@ async def call_chatgpt(message: str, request: web.Request) -> str:
         {'role': 'user', 'content': message},
     ]
     payload = {
-        'model': 'gpt-4',
+        'model': 'gpt-3.5-turbo',
         'messages': messages,
     }
 
@@ -200,7 +200,7 @@ async def handle_twilio_messages(
                 data = message.json()
                 match data['event']:
                     case 'start':
-                        # Twilio should be sending us mulaw-encoded audio at 8000Hz.
+                       # Twilio should be sending us mulaw-encoded audio at 8000Hz.
                         # At least, this is what we've already told Deepgram to
                         # expect when opening our websocket stream. If not
                         # correct, we should just abort here.
@@ -269,9 +269,9 @@ async def twiml_continue(request: web.Request) -> web.Response:
     twilio_response = VoiceResponse()
     next_transcript = await response_queue.get()
     if next_transcript == END_TRANSCRIPT_MARKER:
-        twilio_response.say('Thank you for calling. Goodbye!', voice="Polly.Amy", language="en-GB")
+        twilio_response.say('Thank you for calling. Goodbye!', voice="Polly.Amy", language="en-US")
     else:
-        twilio_response.say(next_transcript, voice="Polly.Amy", language="en-GB")
+        twilio_response.say(next_transcript, voice="Polly.Amy", language="en-US")
         await continue_call(request, twilio_response)
 
     response = web.Response(text=str(twilio_response))
@@ -300,7 +300,7 @@ async def start(request: web.Request) -> web.Response:
         logging.info('Got websocket URL: %s', stream_url)
 
         twilio_response.start().stream(url=stream_url, track='inbound_track')
-        twilio_response.say('Hey. Whats up?', voice="Polly.Justin-Neural", language="en-US")
+        twilio_response.say('Hello?', voice="Polly.Amy", language="en-US")
         await continue_call(request, twilio_response)
 
         sms_data = {
@@ -318,6 +318,34 @@ async def start(request: web.Request) -> web.Response:
 
     return response
 
+
+@routes.post('/twilio/sms')
+async def handle_sms(request: web.Request) -> web.Response:
+    """Handle incoming SMS messages."""
+    try:
+        body = await request.post()
+        from_number = body.get('From')
+        message_body = body.get('Body')
+
+        logging.info('Received SMS from %s with message: %s', from_number, message_body)
+
+        # Update the SYSTEM_MESSAGE_CONTENT with the received message body.
+        request.app['SYSTEM_MESSAGE_CONTENT'] = message_body
+        logging.info('Updated SYSTEM_MESSAGE_CONTENT to: %s', message_body)
+
+        # Set configuration from SMS.
+        SYSTEM_MESSAGE_CONTENT = message_body
+        logging.info('SMS received and updated configuration saved!')
+
+        # Send a response back to Twilio.
+        response = web.Response(text="<Response></Response>")
+        response.content_type = 'text/xml'
+        return response
+
+    except Exception as e:
+        logging.error('Error handling SMS: %s', str(e))
+        raise
+        
 
 async def app_factory() -> web.Application:
     """Application factory."""
@@ -341,6 +369,9 @@ async def app_factory() -> web.Application:
 
     # Set up routing table
     app.add_routes(routes)
+
+    # Initialize the SYSTEM_MESSAGE_CONTENT
+    app['SYSTEM_MESSAGE_CONTENT'] = SYSTEM_MESSAGE_CONTENT
 
     return app
 
