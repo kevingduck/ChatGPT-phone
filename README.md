@@ -1,4 +1,4 @@
-# ColdCallGenius
+# ColdCallGenius AKA ChatGPT Phone
 ### Practice realistic cold calls with an AI bot
 
 ▶️ _Try it now! call 864-387-2800 and test out your best pitch!_
