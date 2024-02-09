@@ -27,6 +27,10 @@ END_TRANSCRIPT_MARKER = 'END_TRANSCRIPT_MARKER'
 
 routes = web.RouteTableDef()
 
+def add_to_transcript(message):
+    with open('conversation_log.txt', 'a') as file:
+        file.write(message + '\n')
+
 
 async def continue_call(request: web.Request, twilio_response: VoiceResponse):
     """Continue a call.
@@ -72,6 +76,9 @@ def open_deepgram_ws(request: web.Request) -> ClientWebSocketResponse:
     return dg_connection
 
 
+# Initialize conversation list outside of your function
+conversation = [{'role':'system', 'content': SYSTEM_MESSAGE_CONTENT}]
+
 async def call_chatgpt(message: str, request: web.Request) -> str:
     app_client = request.app['app_client']
     url = 'https://api.openai.com/v1/chat/completions'
@@ -79,17 +86,18 @@ async def call_chatgpt(message: str, request: web.Request) -> str:
     headers = {
         'Authorization': f"Bearer {key}",
     }
-    messages = [
-        {'role':'system', 'content': SYSTEM_MESSAGE_CONTENT},
-        {'role': 'user', 'content': message},
-    ]
+
+    # Add user message to conversation
+    conversation.append({'role': 'user', 'content': message})
+
     payload = {
         'model': 'gpt-3.5-turbo',
-        'messages': messages,
+        'messages': conversation,
     }
 
     # log message being sent to ChatGPT to console
     logging.info('Sending to ChatGPT -> User: %s', message)
+    add_to_transcript(f'You: {message}')
 
     async with app_client.post(url, headers=headers, json=payload) as resp:
         if resp.status != 200:
@@ -97,8 +105,12 @@ async def call_chatgpt(message: str, request: web.Request) -> str:
         resp_payload = await resp.json()
         response = resp_payload['choices'][0]['message']['content'].strip()
 
+    # Add bot response to conversation
+    conversation.append({'role': 'assistant', 'content': response})
+
     # log bot response from ChatGPT to console
     logging.info('ChatGPT: %s', response)
+    add_to_transcript(f'Prospect: {response}')
 
     return response
 
