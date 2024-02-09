@@ -28,7 +28,7 @@ END_TRANSCRIPT_MARKER = 'END_TRANSCRIPT_MARKER'
 routes = web.RouteTableDef()
 
 def add_to_transcript(message):
-    with open('conversation_log.txt', 'a') as file:
+    with open('conversation_log.txt', 'w') as file:
         file.write(message + '\n')
 
 
