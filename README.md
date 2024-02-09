@@ -1,7 +1,7 @@
 # Cold Call Genius AKA ChatGPT Phone
 ### Practice realistic cold calls with an AI bot
 
-~▶️ _Try it now! call 864-387-2800 and test out your best pitch!_~ This is offline now but the code is available for you to run yourself 👀
+▶️ Try it now! call 864-387-2800 and test out your best pitch! (_This is offline periodically but the code is available for you to run yourself_ 👀)
 
 📲 This app uses a twilio number to point to a python script running on ngrok server
 
