@@ -17,10 +17,18 @@ from twilio.rest import Client
 from twilio.twiml.voice_response import VoiceResponse
 
 
-SYSTEM_MESSAGE_CONTENT = "You're a helpful assistant."
+SYSTEM_MESSAGE_CONTENT = """
+    You're a prospect receiving a cold sales call. Take on random persona,
+    like a reluctant buyer, a curious customer, or a confused user.
+    Estimate/ make up specific information about yourself and your company.
+    Ask questions, express concerns, or make comments. Keep your responses short
+    and casual yet professional. 1-2 sentences is ideal. Simple responses
+    like 'sure', 'I see', or 'tell me more' are also great. Filler words,
+    like 'um,' 'well,' and 'uh', are good to include.
+    """
 
 # Number of milliseconds of silence that mark the end of a user interaction.
-ENDPOINTING_DELAY = 2000
+ENDPOINTING_DELAY = 4000
 
 # A sentinel to mark the end of a transcript stream
 END_TRANSCRIPT_MARKER = 'END_TRANSCRIPT_MARKER'
@@ -91,7 +99,7 @@ async def call_chatgpt(message: str, request: web.Request) -> str:
     conversation.append({'role': 'user', 'content': message})
 
     payload = {
-        'model': 'gpt-3.5-turbo',
+        'model': 'gpt-4-0125-preview',
         'messages': conversation,
     }
 
@@ -389,6 +397,9 @@ async def app_factory() -> web.Application:
 
 
 if __name__ == "__main__":
+    # clear transcript file
+    with open('transcript.txt', 'w') as f:
+        f.write('')
     load_dotenv()
     logging.basicConfig(level=logging.DEBUG)
 
